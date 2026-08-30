@@ -16,11 +16,7 @@
 git status --short; git log -1 --oneline; git rev-parse HEAD; git rev-parse origin/main
 ```
 
-当前确认的 Git 提交为：
-
-```text
-94c62e336f9730433cace1912eb86907a4c394a3 完善跨电脑首次自检
-```
+当前版本以该命令输出的 `HEAD` 与 `origin/main` 完全一致为准。首次运行配置修复对应历史提交为 `94c62e3 完善跨电脑首次自检`；本暂停交接文档及后续仅文档提交会在该提交之后。
 
 GitHub 仓库：<https://github.com/nmrsz645-bit/qimaochushu.git>
 
