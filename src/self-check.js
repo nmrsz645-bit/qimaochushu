@@ -4,15 +4,14 @@ const { chromium } = require("playwright-core");
 const { resolveAppRoot } = require("./desktop-paths");
 const rootDir = resolveAppRoot();
 const configPath = path.join(rootDir, "config.json");
-const currentConfig = require(configPath);
-const { mergeWithDefaults } = require("./config-utils");
+const { loadConfig } = require("./runtime-config");
 const { requireChromeExecutable } = require("./chrome-utils");
 const { nowChinaText } = require("./time-utils");
 const { sendWechatFile } = require("./workflow-utils");
 const { writeLabelToFirstEmptyFeishuRow } = require("./feishu-utils");
 const { readDeepSeekApiKey, requestDeepSeekTopicLabel } = require("./deepseek-topic-utils");
 
-const config = mergeWithDefaults(currentConfig, rootDir);
+const config = loadConfig();
 
 function line(ok, name, detail = "") {
   const mark = ok ? "通过" : "失败";
