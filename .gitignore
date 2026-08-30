@@ -1,0 +1,29 @@
+# User configuration and credentials
+config.json
+config/
+违禁词.txt
+
+# Runtime data and authenticated browser profile
+data/
+logs/
+failed/
+outputs/
+七猫出书/
+ChromeProfile/
+充值模板/
+小说可移动/
+
+# Build and dependency output
+node_modules/
+release/
+out/
+dist/
+
+# Historical planning notes may contain old local configuration examples.
+docs/superpowers/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+*.log
+*.tmp

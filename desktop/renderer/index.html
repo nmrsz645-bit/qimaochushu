@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>七猫出书管理器</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <aside>
+      <h1>七猫出书</h1>
+      <button data-tab="home">首页</button>
+      <button data-tab="logs">日志</button>
+      <button data-tab="failures">失败队列</button>
+      <button data-tab="config">配置</button>
+    </aside>
+    <main>
+      <section id="home" class="tab active">
+        <div class="toolbar">
+          <button data-command="watch-hourly">开始 7*24 监控</button>
+          <button data-command="stop-all">停止程序</button>
+          <button data-command="run-once">运行一次</button>
+          <button data-command="run-today">一键出完今日书</button>
+          <button data-command="watchdog">一键守护监控</button>
+          <button data-command="prevent-sleep">一键防睡眠</button>
+          <button data-startup="enable">开启开机自启</button>
+          <button data-startup="disable">关闭开机自启</button>
+          <button data-command="self-check">一键自检</button>
+          <button data-command="rebuild-baseline">重建基准</button>
+          <button data-command="open-login">打开登录页面</button>
+        </div>
+        <div class="single-book">
+          <textarea id="batchBookIds" placeholder="批量输入书籍ID：一行一个，也可用逗号或空格分隔"></textarea>
+          <button id="processBatchBooks">批量处理书籍</button>
+        </div>
+        <div id="monitorBanner" class="monitor-banner stopped">监控未运行</div>
+        <div id="statusGrid" class="grid"></div>
+        <div class="toolbar">
+          <button data-folder="novel">打开小说内容文件夹</button>
+          <button data-folder="logs">打开日志文件夹</button>
+        </div>
+        <pre id="message"></pre>
+      </section>
+      <section id="logs" class="tab">
+        <button id="refreshLogs">刷新日志</button>
+        <h2>run.log</h2>
+        <pre id="runLog"></pre>
+        <h2>watch-hourly.log</h2>
+        <pre id="watchLog"></pre>
+        <h2>watchdog.log</h2>
+        <pre id="watchdogLog"></pre>
+      </section>
+      <section id="failures" class="tab">
+        <button id="refreshFailures">刷新失败队列</button>
+        <table>
+          <thead>
+            <tr><th>书籍ID</th><th>书名</th><th>次数</th><th>阶段</th><th>最后失败</th><th>错误</th></tr>
+          </thead>
+          <tbody id="failureRows"></tbody>
+        </table>
+      </section>
+      <section id="config" class="tab">
+        <div class="toolbar">
+          <button id="loadConfig">读取配置</button>
+          <button id="saveConfig">保存配置</button>
+        </div>
+        <div id="configForm" class="config-form">
+          <div class="config-row">
+            <label>发送小说正文到企业微信</label>
+            <input id="sendNovelToWechat" type="checkbox" />
+          </div>
+          <div class="config-row">
+            <label>平台链接</label>
+            <input id="platformLink" autocomplete="off" />
+          </div>
+          <div class="config-row">
+            <label>企业微信 Webhook</label>
+            <input id="wechatWebhook" autocomplete="off" />
+          </div>
+          <div class="config-row config-row-large">
+            <label>飞书接口</label>
+            <textarea id="feishuApi" autocomplete="off"></textarea>
+          </div>
+          <div class="config-row">
+            <label>飞书完成表链接</label>
+            <input id="feishuTableLink" autocomplete="off" />
+          </div>
+          <div class="config-row">
+            <label>阿里云 DeepSeek API Key</label>
+            <input id="deepseekApiKey" type="password" autocomplete="off" />
+          </div>
+          <div class="config-row">
+            <label>阿里云接口地址</label>
+            <input id="deepseekApiBaseUrl" autocomplete="off" />
+          </div>
+          <div class="config-row">
+            <label>DeepSeek 模型</label>
+            <input id="deepseekModel" autocomplete="off" />
+          </div>
+          <div class="config-row">
+            <label>每次扫描页数</label>
+            <input id="scanPageCount" type="number" min="1" max="100" step="1" inputmode="numeric" />
+            <small id="scanPageCountHint"></small>
+          </div>
+          <div class="config-row">
+            <label>同名书处理方式</label>
+            <select id="duplicateBookTitleMode">
+              <option value="with-number">带数字出书</option>
+              <option value="without-number">不带数字出书</option>
+            </select>
+            <small>仅自动监控和一键出完今日书生效；手动批量处理不受影响。</small>
+          </div>
+          <div class="config-row config-row-large">
+            <label>违禁词（每行一个）</label>
+            <textarea id="forbiddenWords" autocomplete="off"></textarea>
+          </div>
+          <div class="config-row">
+            <label>配置输入目录</label>
+            <input id="configInputDir" readonly />
+            <button data-select-dir="configInputDir">选择</button>
+          </div>
+          <div class="config-row">
+            <label>充值模板目录</label>
+            <input id="templateDir" readonly />
+            <button data-select-config="templateDir">选择</button>
+          </div>
+          <div class="config-row">
+            <label>章节输出目录</label>
+            <input id="outputDir" readonly />
+            <button data-select-config="outputDir">选择</button>
+          </div>
+          <div class="config-row">
+            <label>小说内容目录</label>
+            <input id="novelDir" readonly />
+            <button data-select-dir="novelDir">选择</button>
+          </div>
+          <div class="config-row">
+            <label>失败目录</label>
+            <input id="failedDir" readonly />
+            <button data-select-config="failedDir">选择</button>
+          </div>
+          <div class="config-row">
+            <label>日志目录</label>
+            <input id="logDir" readonly />
+            <button data-select-config="logDir">选择</button>
+          </div>
+          <div class="config-row">
+            <label>数据目录</label>
+            <input id="dataDir" readonly />
+            <button data-select-config="dataDir">选择</button>
+          </div>
+        </div>
+        <h2>高级配置</h2>
+        <textarea id="configText"></textarea>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>
