@@ -301,6 +301,40 @@ function testTodayBookStatisticsCountsTerminalFailuresSeparately() {
   assert.deepStrictEqual(result, { total: 4, completed: 2, pending: 1, terminalFailed: 1 });
 }
 testTodayBookStatisticsCountsTerminalFailuresSeparately();
+function testAutomationStatusReconcilesRealTodayCounts() {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "qimao-status-reconcile-"));
+  fs.mkdirSync(path.join(dir, "data"), { recursive: true });
+  fs.mkdirSync(path.join(dir, "logs"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "config.json"), JSON.stringify({ duplicateBookTitleMode: "without-number", maxFailureAttempts: 3 }), "utf8");
+  fs.writeFileSync(path.join(dir, "data", "today_scan.json"), JSON.stringify({
+    date: "2026-08-30",
+    books: [
+      { bookId: "1", bookName: "15同名书", originalBookName: "同名书" },
+      { bookId: "2", bookName: "8同名书", originalBookName: "同名书" },
+      { bookId: "3", bookName: "成功书" },
+      { bookId: "4", bookName: "等待重试书" },
+      { bookId: "5", bookName: "彻底失败书" },
+    ],
+  }), "utf8");
+  fs.writeFileSync(path.join(dir, "data", "today_processed_titles.json"), JSON.stringify({
+    date: "2026-08-30",
+    originalTitleKeys: ["同名书", "成功书"],
+  }), "utf8");
+  fs.writeFileSync(path.join(dir, "data", "failed_tasks.json"), JSON.stringify({
+    failures: [
+      { bookId: "4", attempts: 1, nextRetryAt: "2026-08-30 12:00:00" },
+      { bookId: "5", attempts: 3 },
+    ],
+  }), "utf8");
+  const status = getAutomationStatus(dir, "2026-08-30");
+  assert.strictEqual(status.todayNewBookCount, 4);
+  assert.strictEqual(status.todayProcessedBookCount, 2);
+  assert.strictEqual(status.todayPendingBookCount, 1);
+  assert.strictEqual(status.todayTerminalFailureBookCount, 1);
+  assert.strictEqual(status.failureCount, 1);
+  assert.strictEqual(status.todayNewBookCount, status.todayProcessedBookCount + status.todayPendingBookCount + status.todayTerminalFailureBookCount);
+}
+testAutomationStatusReconcilesRealTodayCounts();
 testEnsurePortableLayoutCreatesConfigAndFolders();
 testChromeCommandsAreBlockedWhileAnotherChromeCommandRuns();
 console.log("desktop-service tests passed");

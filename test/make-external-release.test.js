@@ -1,4 +1,6 @@
 const assert = require("assert");
+const fs = require("fs");
+const path = require("path");
 const {
   buildExternalConfig,
   buildNodeModeBat,
@@ -61,9 +63,17 @@ function testExternalDataCopySkipsVolatileFiles() {
   assert.strictEqual(shouldCopyRuntimeDataFile("run-once.lock"), false);
 }
 
+function testGitIgnoreProtectsPortableUserData() {
+  const text = fs.readFileSync(path.join(__dirname, "..", ".gitignore"), "utf8");
+  for (const ignoredPath of ["config.json", "config/", "data/", "logs/", "failed/", "outputs/", "七猫出书/", "ChromeProfile/", "充值模板/", "小说可移动/", "违禁词.txt", "node_modules/", "release/"]) {
+    assert.ok(text.split(/\r?\n/).includes(ignoredPath), `missing gitignore rule: ${ignoredPath}`);
+  }
+}
+
 testExternalConfigUsesRelativePaths();
 testExternalBatDoesNotRequireNpm();
 testStartManagerBatRunsExeDirectly();
 testExternalBatMapIncludesRunToday();
 testExternalDataCopySkipsVolatileFiles();
+testGitIgnoreProtectsPortableUserData();
 console.log("make-external-release tests passed");

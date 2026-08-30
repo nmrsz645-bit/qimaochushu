@@ -16,7 +16,7 @@
     "make-external": "node src/make-external-release.js",
     "pack-desktop": "electron-builder --dir",
     "dist-desktop": "electron-builder",
-    "test": "node test/workflow-utils.test.js && node test/feishu-utils.test.js && node test/local-topic-utils.test.js && node test/deepseek-topic-utils.test.js && node test/compliance-topic-utils.test.js && node test/chrome-utils.test.js && node test/config-utils.test.js && node test/platform-utils.test.js && node test/failure-utils.test.js && node test/doubao-utils.test.js && node test/cleanup-utils.test.js && node test/time-utils.test.js && node test/timeout-utils.test.js && node test/process-lock.test.js && node test/watch-hourly-utils.test.js && node test/watchdog-utils.test.js && node test/desktop-service.test.js && node test/make-external-release.test.js",
+    "test": "node test/workflow-utils.test.js && node test/feishu-utils.test.js && node test/local-topic-utils.test.js && node test/deepseek-topic-utils.test.js && node test/compliance-topic-utils.test.js && node test/chrome-utils.test.js && node test/config-utils.test.js && node test/platform-utils.test.js && node test/platform-browser-contract.test.js && node test/failure-utils.test.js && node test/doubao-utils.test.js && node test/cleanup-utils.test.js && node test/time-utils.test.js && node test/timeout-utils.test.js && node test/process-lock.test.js && node test/watch-hourly-utils.test.js && node test/watchdog-utils.test.js && node test/desktop-service.test.js && node test/make-external-release.test.js",
     "run-today": "node src/run-today.js"
   },
   "keywords": [],
