@@ -37,6 +37,8 @@ npm run make-external
 
 真实配置不在 Git 仓库中。请在管理器的“配置”页面填写，或参考 [config.example/README.md](config.example/README.md) 建立本地文件。
 
+首次直接执行 `npm run run-once`、`npm run self-check` 等命令时，也会自动创建空白的本地 `config.json`；随后仍需在管理器配置页填写账号、接口和目录。
+
 必须由使用者在本机自行提供：
 
 - 平台链接及七猫账号登录状态
@@ -63,4 +65,3 @@ npm run make-external
 - `test/`：Node 单元测试。
 - `docs/`：历史设计与实现说明。
 - `release/`：本地构建产物，不提交。
-
