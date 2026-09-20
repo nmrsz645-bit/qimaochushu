@@ -3,7 +3,7 @@ const { buildLocalTopicLabel, readForbiddenWords } = require("./local-topic-util
 const { sanitizeTopics } = require("./compliance-topic-utils");
 
 const DEFAULT_DASHSCOPE_BASE_URL = "https://dashscope.aliyuncs.com/api/v1";
-const DEFAULT_DEEPSEEK_MODEL = "deepseek-v3";
+const DEFAULT_DEEPSEEK_MODEL = "deepseek-v4-flash-0731";
 const HOT_TOPIC = "热门小说";
 const GENERIC_TOPICS = new Set(["现实故事", "情感故事", "女性成长", "家庭关系", "婚恋情感"]);
 const COMPLIANCE_SYSTEM_PROMPT = "人物名仅可使用小说虚构角色名，不得输出明星、名人、公众人物、领导人或国家机关工作人员姓名。不得输出政治国家元素、低俗性暗示、血腥暴力、违法犯罪、虚假诱导、夸大宣传等风险词；不得使用骗局、车祸、流产、火葬场、复仇等风险示例。有风险时改用中性剧情标签。";
@@ -74,15 +74,26 @@ async function requestDeepSeekTopicLabel(bookName, content, options = {}) {
   if (typeof fetchImpl !== "function") throw new Error("DashScope fetch is unavailable");
 
   const timeoutMs = Math.max(1000, Number(options.timeoutMs) || 45000);
+  const model = options.model || DEFAULT_DEEPSEEK_MODEL;
+  const compatible = ["deepseek-v4-flash-0731", "qwen3.8-flash"].includes(model);
+  const messages = [
+    { role: "system", content: `${COMPLIANCE_SYSTEM_PROMPT}\n\n${TOPIC_SYSTEM_PROMPT}` },
+    { role: "user", content: `小说书名：${bookName || ""}\n\n小说正文：\n${content || ""}\n\n额外违禁词（绝不输出）：${(options.forbiddenWords || []).slice(0, 200).join("、") || "无"}` },
+  ];
+  const endpoint = compatible
+    ? buildCompatibleChatUrl(options.baseUrl)
+    : buildDashScopeGenerationUrl(options.baseUrl);
   let response;
   try {
-    response = await fetchImpl(buildDashScopeGenerationUrl(options.baseUrl), {
+    response = await fetchImpl(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({
+      body: JSON.stringify(compatible ? {
+        model, messages, enable_thinking: false, max_tokens: 180, stream: false,
+      } : {
         model: options.model || DEFAULT_DEEPSEEK_MODEL,
         input: {
           messages: [
@@ -112,7 +123,8 @@ async function requestDeepSeekTopicLabel(bookName, content, options = {}) {
   } catch {
     throw new Error("DashScope DeepSeek response was invalid");
   }
-  const text = body && body.output && body.output.choices && body.output.choices[0] && body.output.choices[0].message && body.output.choices[0].message.content;
+  const text = compatible ? body?.choices?.[0]?.message?.content
+    : body?.output?.choices?.[0]?.message?.content;
   if (!String(text || "").trim()) throw new Error("DashScope DeepSeek response was empty");
   const label = normalizeDeepSeekLabel(text, { forbiddenWords: options.forbiddenWords || [] });
   if (label === "#热门小说") throw new Error("DashScope DeepSeek response had no usable labels");
@@ -141,7 +153,20 @@ async function buildTopicLabel(bookName, content, options = {}) {
   }
 }
 
+function buildCompatibleChatUrl(baseUrl) {
+  const url = new URL(baseUrl || DEFAULT_DASHSCOPE_BASE_URL);
+  if (url.protocol !== "https:" || url.username || url.password || url.search || url.hash) {
+    throw new Error("DashScope base URL is invalid");
+  }
+  const pathname = url.pathname.replace(/\/+$/, "");
+  if (!["", "/api/v1", "/api/v1/services/aigc/text-generation/generation", "/compatible-mode/v1", "/compatible-mode/v1/chat/completions"].includes(pathname)) {
+    throw new Error("DashScope base URL path is invalid");
+  }
+  return `${url.origin}/compatible-mode/v1/chat/completions`;
+}
+
 module.exports = {
+  buildCompatibleChatUrl,
   TOPIC_SYSTEM_PROMPT,
   DEFAULT_DASHSCOPE_BASE_URL,
   DEFAULT_DEEPSEEK_MODEL,

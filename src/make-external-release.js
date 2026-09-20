@@ -89,7 +89,7 @@ function buildExternalConfig(currentConfig = {}) {
     deepseekApiBaseUrl: currentConfig.deepseekApiBaseUrl || "https://ws-qbczn48xwolhpy29.cn-beijing.maas.aliyuncs.com/api/v1",
     deepseekModel: currentConfig.deepseekModel && currentConfig.deepseekModel !== "deepseek-v4-flash"
       ? currentConfig.deepseekModel
-      : "deepseek-v3",
+      : "deepseek-v4-flash-0731",
     deepseekTimeoutMs: 45000,
     latestChapterTextFile: "小说可移动\\小说内容.txt",
     feishuCompletionFallback: true,

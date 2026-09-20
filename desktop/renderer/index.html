@@ -94,8 +94,13 @@
             <input id="deepseekApiBaseUrl" autocomplete="off" />
           </div>
           <div class="config-row">
-            <label>DeepSeek 模型</label>
-            <input id="deepseekModel" autocomplete="off" />
+            <label>标签生成模型</label>
+            <select id="deepseekModel">
+              <option value="deepseek-v4-flash-0731">DeepSeek-V4-Flash-0731</option>
+              <option value="qwen3.8-flash">qwen3.8-flash</option>
+              <option value="deepseek-v3">deepseek-v3（旧版）</option>
+            </select>
+            <small>默认关闭思考模式；两个新模型均使用阿里云兼容接口。</small>
           </div>
           <div class="config-row">
             <label>每次扫描页数</label>

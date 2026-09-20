@@ -20,7 +20,7 @@ function testExternalConfigUsesRelativePaths() {
   assert.strictEqual(config.singleBookTimeoutMs, 300000);
   assert.strictEqual(config.failureRetryDelayMs, 3600000);
   assert.strictEqual(config.deepseekApiKeyFile, "config\\DeepSeek接口.txt");
-  assert.strictEqual(config.deepseekModel, "deepseek-v3");
+  assert.strictEqual(config.deepseekModel, "deepseek-v4-flash-0731");
   assert.strictEqual(config.deepseekApiBaseUrl, "https://ws-qbczn48xwolhpy29.cn-beijing.maas.aliyuncs.com/api/v1");
   assert.strictEqual(config.deepseekTimeoutMs, 45000);
   assert.strictEqual(config.sendNovelToWechat, true);
