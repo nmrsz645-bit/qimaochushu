@@ -1,6 +1,17 @@
 # 七猫出书暂停交接
 
-更新时间：2026-08-31
+更新时间：2026-09-20
+
+## 最新发布状态（2026-09-20）
+
+> 本节优先于后续历史交接说明；历史段落保留用于追溯此前的暂停状态。
+
+- 已将既有的模型支持与测试改动提交并推送到 `main`：`cdb62bddd45c8112de5aea52512c1b03a7a1026c`（`支持阿里云百炼标签模型`）。默认模型为 `deepseek-v4-flash-0731`，可选 `qwen3.8-flash`，并保留 `deepseek-v3`；新增模型走兼容模式 `/compatible-mode/v1/chat/completions`，关闭思考与流式返回。
+- 已在不含任何用户配置、登录态、业务数据或日志的独立构建目录完成 `npm ci`、20 项离线测试和 `npm run pack-desktop`；实际启动打包后的桌面程序成功。构建所产生的初始空白资料没有进入发布包。
+- 已发布 Windows x64 完整 ZIP：<https://luotuoruanjiangengx.oss-cn-beijing.aliyuncs.com/packages/qimao-chushu-manager-1.0.0-win-x64.zip>。公开回读文件为 157,364,450 字节，SHA-256 为 `93F67981C4E1CB72F4F92B779045F346AB34585A6B08642FCB65BE5E3BD496A7`；ZIP 共 74 个文件，审计确认未包含 `config.json`、`config/`、账号登录态、密钥、数据、日志或业务目录。
+- 下载中心源码入口已推送为 `50c703721c30ddb4c6cba00dd6c3a3cc63c0cdea`，GitHub Pages 地址 <https://nmrsz645-bit.github.io/software-download-center/> 已回读确认展示“七猫出书管理器”及上述链接。既有自定义域名 `download.luotuoqiluotuozhaoma.com` 当前正常 TLS 校验报主机名不匹配，需单独修复证书后再作为官方入口核验。
+- 没有执行七猫、飞书、企业微信或真实模型 API 的业务流程，也没有执行 `self-check`、`show-info`。项目当前发布的是手动下载的完整 ZIP；源码中没有可验证的应用内远程更新清单/升级协议。
+- 未运行 `npm run make-external`：该脚本会删除既有对外版目录并复制本机配置，无法满足本次资料保护边界。`npm ci` 仍报告 6 个历史高危依赖告警，未在本次发布中冒险升级依赖链。
 
 ## 当前状态与目标
 
@@ -16,7 +27,7 @@
 git status --short; git log -1 --oneline; git rev-parse HEAD; git rev-parse origin/main
 ```
 
-当前版本以该命令输出的 `HEAD` 与 `origin/main` 完全一致为准。首次运行配置修复对应历史提交为 `94c62e3 完善跨电脑首次自检`；本暂停交接文档及后续仅文档提交会在该提交之后。
+当前版本以该命令输出的 `HEAD` 与 `origin/main` 完全一致为准。模型支持发布对应提交为 `cdb62bd 支持阿里云百炼标签模型`；本次发布记录及后续仅文档提交会在该提交之后。
 
 GitHub 仓库：<https://github.com/nmrsz645-bit/qimaochushu.git>
 
