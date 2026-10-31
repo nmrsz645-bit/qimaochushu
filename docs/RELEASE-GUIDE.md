@@ -1,6 +1,7 @@
 # 七猫出书：新 Windows 接手与发布指南
 
 核验日期：2026-10-31。本指南只对应可维护历史源码 1.0.0，不对应来源未找到的 qi-mao-chu-shu-1.0.19。
+使用者现已选定此 1.0.0 源码和已上传完整包为本次接手基线；1.0.19 来源不再阻塞本次交接。下文追查来源要求适用于未来声称对应 1.0.19 的发布，不限制本基线下载和开发。
 本轮仅发布文档，以下构建、上传、网站修改命令是未来操作说明，本轮未执行。
 
 ## 1. 源码和版本关系
@@ -123,3 +124,16 @@ GitHub 使用 gh auth login 的既有账户会话，核对 gh auth status 和仓
 业务配置名：platformLinkFile、feishuApiFile、feishuTableLinkFile、deepseekApiKeyFile、deepseekApiBaseUrl、deepseekModel、wechatWebhookFile，均由 config-utils.js 定义。凭据获取见 README，不含任何真实值。
 
 仍缺：1.0.19 完整源码/包构建记录；实际外层更新器和 catalog 来源；可靠的自动升级/增量协议；跨电脑生产接口及全链路验收。已知飞书大表、目录配置和守护缺陷见 HANDOFF。没有这些证据时，只能称“已确认历史 1.0.0”，不能称所有最新版已交付。
+
+## 8. 本次选定基线的干净远端验收
+
+2026-10-31 从 GitHub main 新 clone 到隔离目录，输入提交 `7d3fdf5c062bf267ad8e48bfaad78c28c72deb5e`；后续本次提交仅补文档，程序和锁文件不变。
+
+- Node 24.19.0 / npm 11.17.0；`npm ci --no-audit --no-fund` 按锁文件安装 285 个包，退出 0。该次没有进行漏洞审计；存在依赖弃用警告，不代表依赖无漏洞。
+- 本机 npm 安装脚本策略下 Electron 的 path.txt 未就绪，执行官方包自带 `node node_modules/electron/install.js` 后补齐。这是遇到该缺失时的排障步骤，不要求关闭全局安全策略。electron-winstaller 的脚本许可警告未影响本次目录包；未验证安装器。
+- `npm test` 的 20 个脚本全部通过；`npm run pack-desktop` 成功生成 release/win-unpacked。无需修改程序或锁文件。
+- 从既有 GitHub Release 重新下载完整 ZIP，157375213 字节，SHA-256 与第 6 节一致；没有重复发布、改 tag 或 Latest。
+- 下载包解压到独立空目录，未导入配置和登录资料。隔离启动创建了标题“七猫出书管理器”的窗口及默认 config.json/config/data/logs/outputs/failed/七猫出书，进程响应正常；发送窗口关闭消息后专属进程数为 0。因隐藏启动，未进行可见页面逐项点击验收。
+- 当前可修改范围为 desktop/、src/、test/ 和构建配置；修改前读 AGENTS.md 并保留个人资料。根目录同名 JS 是历史兼容入口。
+
+上述是在本机隔离路径模拟干净接手，不是另一台实体电脑的实测；没有调用真实模型、飞书、七猫接口或启动出书任务。已知业务缺陷仍保留，不将开发可用等同业务无故障。
