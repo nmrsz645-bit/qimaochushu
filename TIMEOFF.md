@@ -1,5 +1,16 @@
 # 七猫出书暂停交接
 
+## 2026-10-31 GitHub补齐核验
+
+本轮只更新 README.md、HANDOFF.md、使用说明.txt 和本记录，不改变程序版本或业务逻辑。
+远端 main 核实为 51db1089a972b667375710339e8bfad2f7284de3，声明版本 1.0.0，无 GitHub Release、Actions 工作流和仓库 webhook。
+外部 1.0.19 的完整源码/构建对应关系未找到；不能将 1.0.0 标作当前用户使用的最新版，也不发布无法追溯的二进制。
+本轮 npm test 的 20 个脚本通过，git diff --check 通过；所有本地可达历史提交的常见密钥模式扫描命中为零（启发式检查，不代表绝对无敏感信息）。
+在既有隔离目录 C:\qimao-release-1.0.0 执行 npm run pack-desktop 成功；该目录无 config.json，其 src/desktop/test/package 文件与当前仓库忽略 CRLF 差异后完全一致。保留了既有修改，未重置目录。
+构建产物 release/win-unpacked/resources/app.asar 共 163 个路径项，检查未发现 config.json、.env、ChromeProfile、日志、输出、失败或专属登录目录。该构建仅为已知 1.0.0 的准备验证，未上传为最新版。
+本轮没有重新 npm ci、GUI 启动、真实平台/API 测试或全链路验收；没有上传 Release、修改 OSS、更新线上清单或下载站。
+阻碍：需取得外部 qi-mao-chu-shu-1.0.19 的可维护源码、构建记录或发布项目定位，方能完成“真正最新版”GitHub程序交付。下一步先核对该来源，不凭空升版。
+
 更新时间：2026-09-20
 
 ## 最新发布状态（2026-09-20）

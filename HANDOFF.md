@@ -1,5 +1,52 @@
 # 交接说明
 
+## 2026-10-31 当前交接（优先于下方历史段落）
+
+### 已核实及缺口
+
+- 仓库 nmrsz645-bit/qimaochushu，公开，main；程序声明 1.0.0。模型源码提交 cdb62bddd45c8112de5aea52512c1b03a7a1026c，上一发布记录提交 51db1089a972b667375710339e8bfad2f7284de3。
+- 外部 1.0.19 仅有故障截图线索，未找到对应源码和提交，不能宣称最新版已同步。已检查原开发目录、独立 1.0.0 构建目录及更新2发布目录，未找到可对应源码。
+- 开发目录为 C:\七猫出书\automation；旧 E: 路径只是历史。修改程序由本任务负责，更新1负责发布；本轮目标仅 GitHub，不改 OSS/网站/运行中程序。
+- 本轮文档提交不改变版本，具体构建测试结果记入 TIMEOFF.md。既往模型调用成功不等于本轮生产验收。
+
+### 架构与开发入口
+
+Electron desktop/main.js 经 preload IPC 接收 desktop/renderer/app.js 操作，启动 src/ 子进程。src/run-once.js 串联扫描、当天筛选、飞书去重、推广、章节、标签、完成记录。根目录同名 JS 是历史兼容文件，不作新功能入口。
+
+- 配置：src/runtime-config.js、src/config-utils.js。
+- 飞书读取和占位：src/feishu-utils.js；标签模型及回退：src/deepseek-topic-utils.js。
+- 词过滤：src/compliance-topic-utils.js、src/local-topic-utils.js。
+- 失败重试和统计：src/failure-utils.js、src/desktop-service.js。
+- 监控和守护：src/watch-hourly.js、src/watchdog.js；浏览器与锁：src/chrome-utils.js、src/process-lock.js。
+- 发布：src/make-external-release.js（危险，见下文）；离线测试：test/。
+
+Windows x64、系统 Node.js 24/npm、Chrome。声明依赖 playwright-core ^1.61.1、electron ^43.0.0、electron-builder ^26.15.3，实际安装遵循 package-lock.json。开发顺序 git status --short → npm ci → npm test → npm run desktop；独立构建 npm run pack-desktop，完整产物 release/win-unpacked。
+
+### 配置及数据保护
+
+安全示例说明在 config.example/README.md；各字段获取方式与输入格式见 README.md 最新章节。凭据来自使用者自己控制台，登录由使用者完成。新模型默认 deepseek-v4-flash-0731，可选 qwen3.8-flash，enable_thinking:false、stream:false。密钥按完整文本读取，不能用正则截断。
+
+保留 config.json、config/、违禁词.txt、data/、logs/、failed/、outputs/、七猫出书/、ChromeProfile/、充值模板/、小说可移动/。禁止把真实配置、账号、内部日志或业务数据提交和打包。
+
+### 未修复问题及复现入口
+
+1. 大飞书表：readFeishuBookNames 读 A:Z，报 90221 超过 10 MiB 后 run-once 整轮退出，未进入单本处理；外部日志已确认。研究只读所需列和分页；读取失败不能误判为空以免重复出书。
+2. 配置页先改页数/正文发送，再选目录：setConfig 重绘恢复未保存值，入口 renderer/app.js。
+3. 小说内容自定义目录被 resolveExistingConfigFiles 中默认目录覆盖。
+4. 修改 dataDir 后，部分 UI 统计、失败队列和锁仍使用根目录 data。
+5. 飞书请求无明确超时，JSON 解析异常处理不足；部分调用在单本超时范围之外，整轮读回失败中断。
+6. 守护 current_task 缺失时有检测盲区，需要独立复现恢复行为。
+7. make-external 会清空旧对外版目录并复制真实凭据，禁止直接执行。
+8. 20 页读取后唯一 ID 不足 1000，疑似翻页重复，尚未确证，不能宣称已修复。
+
+下方历史“飞书短暂读回失败不能终止整轮”是期望，不是现有实现保证。离线测试通过不能覆盖以上所有路径。
+
+### 发布与后续接手
+
+先找到 1.0.19 来源，再决定正式发布对象，不虚增版本。使用独立纯源码构建目录，检查 package.json build.files 中 config.json 的收录风险；审查 app.asar 和 ZIP 内外，首次启动资料不得回流包内。
+发布记录须含源码 SHA、tag、附件 SHA-256 和回读验证。不得覆盖旧包、强推、删除历史或把本机配置当公开默认值。更新需停止业务并保留用户资料；GitHub 发布不等于 OSS/下载站更新。
+下一位先读 README.md、本文件、TIMEOFF.md 最新段落；不得未经授权运行 self-check/show-info 或真实出书。若最新版源码无法对应，明确缺口，不将 1.0.0 标作最新版。
+
 ## 当前项目
 
 - 源码目录：`E:\七猫出书\automation`
