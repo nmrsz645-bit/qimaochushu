@@ -1,5 +1,7 @@
 # 交接说明
 
+下一位 Codex 的跨电脑安装、版本/构建、GitHub Release、OSS/网站对象、验证和回滚步骤统一见 [docs/RELEASE-GUIDE.md](docs/RELEASE-GUIDE.md)，不要自行拼接更新协议。
+
 ## 2026-10-31 当前交接（优先于下方历史段落）
 
 ### 已核实及缺口

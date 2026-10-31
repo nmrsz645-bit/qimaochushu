@@ -1,5 +1,7 @@
 # 七猫出书管理器
 
+新 Windows 接手、手工 ZIP 升级、GitHub 补传和网站卡片发布步骤见 [发布与接手指南](docs/RELEASE-GUIDE.md)。git push 不等于客户端已更新；1.0.19 来源仍待核实。
+
 ## 2026-10-31 接手与发布核验（优先于下方历史说明）
 
 本仓库可确认的程序版本是 **1.0.0**，模型实现提交为 `cdb62bddd45c8112de5aea52512c1b03a7a1026c`。外部电脑曾出现 `qi-mao-chu-shu-1.0.19`，对应源码与发布来源尚未找到；不能将本仓库称为整体最新版。此前 GitHub main 为 `51db1089a972b667375710339e8bfad2f7284de3`，没有 GitHub Release。历史 OSS 发布见 TIMEOFF.md，不等于 GitHub 安装包。
