@@ -1,5 +1,7 @@
 # 七猫出书管理器
 
+**另一台电脑的 Codex 请先读 [HANDOFF.md 的“另一台电脑 Codex 接手入口”](HANDOFF.md)，再按 [发布与接手指南](docs/RELEASE-GUIDE.md) 操作。** 入口包含新机克隆、配置、程序结构、源码上传、完整包发布、网站交接及回滚；已知故障保留在交接文档中。
+
 本次接手基线已由使用者于 2026-10-31 选定为现有 **1.0.0 源码及已上传完整程序包**。外部 1.0.19 的来源差异保留作历史线索，不再阻塞本次交接；这不表示已知业务故障已修复。下载完整 [Windows 程序包](https://github.com/nmrsz645-bit/qimaochushu/releases/tag/v1.0.0-historical-backup-20261031)，开发修改则克隆本仓库 main。新的远端干净输入验收见指南末节。
 
 新 Windows 接手、手工 ZIP 升级、GitHub 补传和网站卡片发布步骤见 [发布与接手指南](docs/RELEASE-GUIDE.md)。git push 不等于客户端已更新；1.0.19 来源仍待核实。

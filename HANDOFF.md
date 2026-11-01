@@ -1,5 +1,54 @@
 # 交接说明
 
+## 另一台电脑 Codex 接手入口（2026-11-01）
+
+本次交付是用户选定的 1.0.0 基线，包含阿里云 deepseek-v4-flash-0731 / qwen3.8-flash 支持，默认关闭思考模式。不是重新寻找 1.0.19，也不是宣称现有业务没有问题。此前源码及文档备份提交为 `3b02210130480bf4e0295a0e452df4e3149a95a5`；本次后续提交仅整理交接文档。
+
+### 新电脑第一步
+
+源码仓库：https://github.com/nmrsz645-bit/qimaochushu 。新电脑安装 Git、Node.js 24/npm、Google Chrome；发布人员另需 gh。公开源码下载无需业务凭据，推送时由用户在新电脑自行登录 GitHub，禁止传递旧机 token。
+
+目标目录尚不存在时，在 PowerShell 执行：
+
+```powershell
+New-Item -ItemType Directory -Force C:\七猫出书
+git clone --branch main https://github.com/nmrsz645-bit/qimaochushu.git C:\七猫出书\automation
+Set-Location C:\七猫出书\automation
+git status --short
+git rev-parse HEAD
+```
+
+如果已有目录，先只读核对仓库和未提交改动，不覆盖、不 reset、不重复 clone。依次读 TIMEOFF.md、README.md、AGENTS.md、本文件、docs/RELEASE-GUIDE.md；历史 E: 路径和旧阶段状态不作为当前事实。以本文件的新说明和指南验收记录为准。
+
+```powershell
+node --version
+npm.cmd --version
+npm.cmd ci
+npm.cmd test
+npm.cmd run desktop
+```
+
+Electron 未安装完整时，按指南第 8 节检查并执行官方安装脚本。首次只打开管理器；让用户在“配置”页本地填写平台链接、飞书 App ID/App Secret/表格链接、百炼 API Key/接口地址/模型、可选企业微信 Webhook、违禁词/模板/小说目录、扫描页数和数字出书模式。不要索取聊天中的密钥。用户点击“打开登录页面”手动登录七猫；先报告缺项再取得真实业务授权，不自动点击出书、自检或监控。
+
+### 程序结构与修改范围
+
+Electron `desktop/main.js` → preload IPC → `desktop/renderer/app.js`；界面启动 `src/` 业务脚本。`src/run-once.js` 扫描书籍、筛选当天、飞书去重、推广/章节/标签、记录结果；`src/watch-hourly.js` 和 `src/watchdog.js` 负责周期及守护。配置、模型、飞书、失败重试文件见下方架构索引。
+
+只在当前 desktop/、src/、test/ 和必要构建配置修改；根目录同名 JS 不是当前实现入口。修改业务逻辑需对应测试，再独立构建。不要覆盖用户配置、正文、失败队列或处理记录。已知故障清单在下方，尤其飞书大表 90221 尚未修复。
+
+### 下载、上传及客户更新必须分开
+
+- 直接运行：下载 [既有完整程序 ZIP](https://github.com/nmrsz645-bit/qimaochushu/releases/tag/v1.0.0-historical-backup-20261031)，完整解压，运行目录内“七猫出书管理器.exe”；无需另装 Node，但需 Chrome。不能只复制 exe。
+- 上传源码：检查差异和敏感数据，只 git add 本次明确文件，commit 后普通 push；禁止 force push。推送前确认 Actions/webhook 不会意外发布。源码上传不会自动更新用户电脑。
+- 生成新程序：在不带 config.json/登录态/业务数据的独立纯源码目录按锁文件安装、测试、`npm run pack-desktop`；首次启动之前打包完整 release/win-unpacked，检查 app.asar 和 ZIP，生成 SHA-256。严禁用当前 make-external 脚本发布，它会清空目标并复制配置。
+- 上传程序：按指南第 4 节，以已批准的新版本/源码提交创建新的 GitHub Release 和完整 ZIP/校验文件；不覆盖旧附件、旧 tag，不随意改 Latest。当前已有包无需重复上传。本次交接不授权发布新程序。
+- 网站/OSS：由“更新1”负责上传和上架，不负责修改程序；交给他源码 SHA、版本、ZIP、SHA-256、测试证据和已知限制。网站仓库、七猫卡片定位、OSS bucket/key、发布及回滚步骤见指南第 5–6 节。不能仅凭 push 声称网站已更新。
+- 客户更新：当前只确认手动完整 ZIP 更新，没有可靠自动升级/增量协议。停止业务并备份旧目录及个人资料，新包解压到新目录，核对本机配置路径后使用；失败时保留新数据并回退旧目录，核对外部写入避免重复出书。跨电脑重新配置/登录，不迁移旧登录态。
+
+### 下一位 Codex 首次应汇报
+
+实际源码目录、分支/完整 HEAD、未提交改动、依赖安装及测试结果、程序首次启动情况、配置缺项和已知业务故障。之前 2026-10-31 干净远端输入的 20 项测试、目录构建及隔离窗口启动通过，不等于这台新电脑或真实生产业务已验收。不要为了“交接完成”隐瞒未验证项。
+
 ## 本次验收基线（2026-10-31，优先于下文旧阻塞描述）
 
 使用者已明确按现有 1.0.0 源码及已上传程序包接手，目标是其他 Windows 电脑能下载、打开及修改。1.0.19 来源不再是本轮交接前置条件，不虚增版本；下文已知业务缺陷继续有效。干净 GitHub clone 已按锁文件安装依赖、20 项离线测试及目录构建通过；现有 Release 重新下载后哈希一致，空配置隔离启动并正常退出。细节见 docs/RELEASE-GUIDE.md 末节；真实业务不在此次验收范围。
